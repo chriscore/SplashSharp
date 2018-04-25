@@ -1,6 +1,7 @@
 
 # SplashSharp
 [**Splash**](https://scrapinghub.com/splash) is a javascript rendering service. It's a lightweight browser with an HTTP API, written by Scrapinghub.
+
 **SplashSharp** is a C# client for talking to Splash instances.
 
 ## Getting Started
