@@ -38,16 +38,29 @@ namespace SplashSharp
 
         private const string RenderHtmlEndpoint = "render.html";
         private const string RenderHarEndpoint = "render.har";
+        private const string RenderPngEndpoint = "render.png";
+        private const string RenderJpegEndpoint = "render.jpeg";
         private const string InvokeGarbageCollectionEndpoint = "_gc";
         private const string GetInstanceStatusEndpoint = "_debug";
         private const string PingEndpoint = "_ping";
         
+        /// <summary>
+        /// Gets rendered HTML as HttpResponseMessage to do as you please with
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public Task<HttpResponseMessage> RenderHtmlAsync(RenderHtmlOptions options, CancellationToken token = default(CancellationToken))
         {
-            var request = BuildSplashRequest(RenderHtmlEndpoint, options);
-            return MakeRequestAsync(request, token);
+            return SendPostRequestWithVerification(RenderHtmlEndpoint, options, token);
         }
 
+        /// <summary>
+        /// Gets rendererd HTML presented as an HtmlAgilityPack HtmlDocument
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<SplashResponseWrapper<HtmlDocument>> RenderHtmlDocumentAsync(RenderHtmlOptions options, CancellationToken token = default(CancellationToken))
         {
             var response = await RenderHtmlAsync(options, token);
@@ -63,15 +76,40 @@ namespace SplashSharp
 
             return wrapper;
         }
-        
+
+        /// <summary>
+        /// Gets interaction metadata in HAR format
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<SplashResponseWrapper<RenderHarResponse>> RenderHarAsync(RenderHarOptions options, CancellationToken token = default(CancellationToken))
         {
-            var request = BuildSplashRequest(RenderHarEndpoint, options);
-            var response = await MakeRequestAsync(request, token);
+            return await MakeTypedPostRequestAsync<RenderHarResponse>(RenderHarEndpoint, options, token);
+        }
 
-            var deserialized = await DeserializeResponse<RenderHarResponse>(response);
+        /// <summary>
+        /// Gets the page rendered as a png image
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<HttpResponseMessage> RenderPngAsync(RenderPngOptions options, CancellationToken token = default(CancellationToken))
+        {
+            var request = BuildSplashRequest(RenderPngEndpoint, options);
+            return Client.SendAsync(request, token);
+        }
 
-            return deserialized;
+        /// <summary>
+        /// Gets the page rendered as a jpeg image
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<HttpResponseMessage> RenderJpegAsync(RenderJpegOptions options, CancellationToken token = default(CancellationToken))
+        {
+            var request = BuildSplashRequest(RenderJpegEndpoint, options);
+            return Client.SendAsync(request, token);
         }
 
         /// <summary>
@@ -81,45 +119,43 @@ namespace SplashSharp
         /// <returns></returns>
         public async Task<SplashResponseWrapper<GarbageCollectionResponse>> InvokeGarbageCollection(CancellationToken token = default(CancellationToken))
         {
-            var request = BuildSplashRequest(InvokeGarbageCollectionEndpoint, null);
-            var response = await MakeRequestAsync(request, token);
-
-            var deserialized = await DeserializeResponse<GarbageCollectionResponse>(response);
-
-            return deserialized;
+            return await MakeTypedPostRequestAsync<GarbageCollectionResponse>(InvokeGarbageCollectionEndpoint, null, token);
         }
 
         public async Task<SplashResponseWrapper<StatusResponse>> GetInstanceStatus(CancellationToken token = default(CancellationToken))
         {
-            var request = BuildSplashRequest(GetInstanceStatusEndpoint);
-            var response = await MakeRequestAsync(request, token);
-
-            var deserialized = await DeserializeResponse<StatusResponse>(response);
-
-            return deserialized;
+            return await MakeTypedGetRequestAsync<StatusResponse>(GetInstanceStatusEndpoint, token);
         }
 
         public async Task<SplashResponseWrapper<PingResponse>> Ping(CancellationToken token = default(CancellationToken))
         {
-            var request = BuildSplashRequest(PingEndpoint);
-            var response = await MakeRequestAsync(request, token);
+            return await MakeTypedGetRequestAsync<PingResponse>(PingEndpoint, token);
+        }
 
-            var deserialized = await DeserializeResponse<PingResponse>(response);
+        private async Task<SplashResponseWrapper<T>> MakeTypedPostRequestAsync<T>(string endpoint, BaseRenderRequestOptions options, CancellationToken token)
+        {
+            var response = await SendPostRequestWithVerification(endpoint, options, token);
+            var deserialized = await DeserializeResponse<T>(response);
+
+            return deserialized;
+        }
+        
+        private async Task<SplashResponseWrapper<T>> MakeTypedGetRequestAsync<T>(string endpoint, CancellationToken token)
+        {
+            var request = BuildSplashRequest(endpoint);
+            var response = await Client.SendAsync(request, token);
+            await VerifyHttpResponseMessageValid(response);
+
+            var deserialized = await DeserializeResponse<T>(response);
 
             return deserialized;
         }
 
-        /// <summary>
-        /// Handles making an HTTP request and optionally running VerifyHttpResponseMessageValid() on it.
-        /// </summary>
-        /// <param name="request">The request to execute</param>
-        /// <param name="token">Cancellation token</param>
-        /// <returns></returns>
-        private async Task<HttpResponseMessage> MakeRequestAsync(HttpRequestMessage request, CancellationToken token)
+        private async Task<HttpResponseMessage> SendPostRequestWithVerification(string endpoint, BaseRenderRequestOptions options, CancellationToken token)
         {
+            var request = BuildSplashRequest(endpoint, options);
             var response = await Client.SendAsync(request, token);
             await VerifyHttpResponseMessageValid(response);
-
             return response;
         }
 
@@ -143,7 +179,7 @@ namespace SplashSharp
             var wrapper = new SplashResponseWrapper<T>(response);
 
             var content = await response.Content.ReadAsStringAsync();
-            var deserialized = JsonConvert.DeserializeObject<T>(content);
+            var deserialized = JsonConvert.DeserializeObject<T>(content, SplashJsonSerializerSettings);
             wrapper.Data = deserialized;
 
             return wrapper;
