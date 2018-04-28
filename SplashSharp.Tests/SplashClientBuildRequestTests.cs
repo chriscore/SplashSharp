@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SplashSharp.Requests;
 
 namespace SplashSharp.Tests
 {
@@ -72,6 +74,32 @@ namespace SplashSharp.Tests
         {
             var request = Client.BuildSplashRequest("some.endpoint", null);
             Assert.AreEqual(HttpMethod.Post, request.Method);
+        }
+
+        [TestMethod]
+        public async Task RequestBodyIsCorrect_Post()
+        {
+            var request = Client.BuildSplashRequest("some.endpoint", new RenderHtmlOptions
+            {
+                Url = "https://www.some-interesting-site.com/page.html"
+            });
+
+            var content = await request.Content.ReadAsStringAsync();
+            Assert.AreEqual("{\"url\":\"https://www.some-interesting-site.com/page.html\"}", content);
+        }
+
+        [TestMethod]
+        public async Task RequestBodyIsCorrect_Post_MultipleParams()
+        {
+            var request = Client.BuildSplashRequest("some.endpoint", new RenderHtmlOptions
+            {
+                Url = "https://www.some-interesting-site.com/page.html",
+                Html5Media = true,
+                ResourceTimeout = 10
+            });
+
+            var content = await request.Content.ReadAsStringAsync();
+            Assert.AreEqual("{\"url\":\"https://www.some-interesting-site.com/page.html\",\"resource_timeout\":10.0,\"html5_media\":1}", content);
         }
     }
 }

@@ -83,5 +83,13 @@ namespace SplashSharp.Tests
         {
             var client = new SplashClient("/service", new HttpClient());
         }
+
+        [TestMethod]
+        public void InjectedHttpClient_IsSet()
+        {
+            var http = new HttpClient();
+            var client = new SplashClient(SplashUrl, http);
+            Assert.AreEqual(http, client.Client);
+        }
     }
 }

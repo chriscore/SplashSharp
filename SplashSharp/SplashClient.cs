@@ -32,7 +32,7 @@ namespace SplashSharp
         public Uri SplashBaseUrl { get; }
         public Dictionary<string, string> CachedArgs { get; set; }
 
-        private HttpClient Client { get; }
+        internal HttpClient Client { get; }
         // TODO: intercept x-splash-saved-arguments to store into CachedArgs, provide an interface to safely use this.
         private const string SavedArgumentsHeaderName = "X-Splash-Saved-Arguments";
 
@@ -159,7 +159,7 @@ namespace SplashSharp
             return response;
         }
 
-        protected virtual async Task VerifyHttpResponseMessageValid(HttpResponseMessage response)
+        protected internal virtual async Task VerifyHttpResponseMessageValid(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
             {
@@ -169,6 +169,10 @@ namespace SplashSharp
                     {
                         var responseStr = await content.ReadAsStringAsync();
                         throw new SplashWebException(response, responseStr);
+                    }
+                    else
+                    {
+                        response.EnsureSuccessStatusCode();
                     }
                 }
             }
