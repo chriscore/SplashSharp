@@ -221,7 +221,7 @@ namespace SplashSharp
                 }
             };
 
-            settings.Converters.Add(new NullableBoolConverter());
+            settings.Converters.Add(new NullableBoolJsonConverter());
             return settings;
         }
     }
