@@ -7,7 +7,7 @@ namespace SplashSharp.Tests
     public class SplashClientConstructorTestsBase
     {
         public SplashClient Client { get; set; }
-        public virtual string SplashUrl { get; }
+        public virtual string SplashUrl { get; set; }
         
         [TestMethod]
         public void CachedArgs_NotNull()
@@ -32,25 +32,31 @@ namespace SplashSharp.Tests
         {
             Assert.AreEqual(SplashUrl, Client.SplashBaseUrl);
         }
+
+        public void InvalidBaseUrl_Throws()
+        {
+            var client = new SplashClient("not a uri");
+
+        }
     }
 
     [TestClass]
-    public class SplashClientConstructorTests : SplashClientConstructorTestsBase
+    public class SplashClientTests : SplashClientConstructorTestsBase
     {
         public override string SplashUrl => "http://localhost:8050";
 
-        public SplashClientConstructorTests()
+        public SplashClientTests()
         {
             Client = new SplashClient(SplashUrl);
         }
     }
 
     [TestClass]
-    public class SplashClientConstructorWithClientTests : SplashClientConstructorTestsBase
+    public class SplashClientTestsWithHttpClient : SplashClientConstructorTestsBase
     {
         public override string SplashUrl => "http://localhost:8050";
 
-        public SplashClientConstructorWithClientTests()
+        public SplashClientTestsWithHttpClient()
         {
             Client = new SplashClient(SplashUrl, new HttpClient());
         }

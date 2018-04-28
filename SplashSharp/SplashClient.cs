@@ -22,14 +22,14 @@ namespace SplashSharp
         public SplashClient(string splashBaseUrl, HttpClient client)
         {
             Client = client;
-            SplashBaseUrl = splashBaseUrl;
+            SplashBaseUrl = new Uri(splashBaseUrl, UriKind.Absolute);
             CachedArgs = new Dictionary<string, string>();
         }
         
         protected internal static JsonSerializerSettings SplashJsonSerializerSettings => LazySerializerSettings.Value;
         private static readonly Lazy<JsonSerializerSettings> LazySerializerSettings = new Lazy<JsonSerializerSettings>(GetSerializerSettings);
 
-        public string SplashBaseUrl { get; }
+        public Uri SplashBaseUrl { get; }
         public Dictionary<string, string> CachedArgs { get; set; }
 
         private HttpClient Client { get; }
