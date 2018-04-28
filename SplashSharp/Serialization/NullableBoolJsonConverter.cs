@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace SplashSharp.Serialization
 {
-    public class NullableBoolConverter : JsonConverter
+    public class NullableBoolJsonConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

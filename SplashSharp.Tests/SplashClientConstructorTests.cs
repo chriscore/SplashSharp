@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,35 +31,57 @@ namespace SplashSharp.Tests
         [TestMethod]
         public void SplashBaseUrl_IsCorrect()
         {
-            Assert.AreEqual(SplashUrl, Client.SplashBaseUrl);
-        }
-
-        public void InvalidBaseUrl_Throws()
-        {
-            var client = new SplashClient("not a uri");
-
+            Assert.AreEqual(new Uri(SplashUrl), Client.SplashBaseUrl);
         }
     }
 
     [TestClass]
     public class SplashClientTests : SplashClientConstructorTestsBase
     {
-        public override string SplashUrl => "http://localhost:8050";
+        public override string SplashUrl => "http://localhost:8050/";
 
         public SplashClientTests()
         {
             Client = new SplashClient(SplashUrl);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UriFormatException))]
+        public void InvalidBaseUrl_Throws()
+        {
+            var client = new SplashClient("not a proper uri");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UriFormatException))]
+        public void InvalidBaseUrl_MustBeAbsolute()
+        {
+            var client = new SplashClient("/service");
         }
     }
 
     [TestClass]
     public class SplashClientTestsWithHttpClient : SplashClientConstructorTestsBase
     {
-        public override string SplashUrl => "http://localhost:8050";
+        public override string SplashUrl => "http://localhost:8050/";
 
         public SplashClientTestsWithHttpClient()
         {
             Client = new SplashClient(SplashUrl, new HttpClient());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UriFormatException))]
+        public void InvalidBaseUrl_Throws()
+        {
+            var client = new SplashClient("not a proper uri", new HttpClient());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UriFormatException))]
+        public void InvalidBaseUrl_MustBeAbsolute()
+        {
+            var client = new SplashClient("/service", new HttpClient());
         }
     }
 }
