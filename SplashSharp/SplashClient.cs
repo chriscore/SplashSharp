@@ -40,6 +40,8 @@ namespace SplashSharp
         private const string RenderHarEndpoint = "render.har";
         private const string RenderPngEndpoint = "render.png";
         private const string RenderJpegEndpoint = "render.jpeg";
+        private const string RenderJsonEndpoint = "render.json";
+        private const string ExecuteEndpoint = "execute";
         private const string InvokeGarbageCollectionEndpoint = "_gc";
         private const string GetInstanceStatusEndpoint = "_debug";
         private const string PingEndpoint = "_ping";
@@ -110,6 +112,30 @@ namespace SplashSharp
         {
             var request = BuildSplashRequest(RenderJpegEndpoint, options);
             return Client.SendAsync(request, token);
+        }
+
+        /// <summary>
+        /// Returns a json-encoded dictionary with information about javascript-rendered webpage. 
+        /// It can include HTML, PNG and other information, based on arguments passed.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<SplashResponseWrapper<RenderJsonResponse>> RenderJson(RenderJsonOptions options, CancellationToken token)
+        {
+            return await MakeTypedPostRequestAsync<RenderJsonResponse>(RenderJsonEndpoint, options, token);
+        }
+
+        /// <summary>
+        /// Executes a custom rendering script and return a result.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task Execute(ExecuteOptions options, CancellationToken token)
+        {
+            throw new NotImplementedException();
+            //return await MakeTypedGetRequestAsync<ExecuteResponse>(ExecuteEndpoint, options, token);
         }
 
         /// <summary>
@@ -226,6 +252,7 @@ namespace SplashSharp
             };
 
             settings.Converters.Add(new NullableBoolJsonConverter());
+            settings.Converters.Add(new ExecuteOptionsJsonConverter());
             return settings;
         }
     }

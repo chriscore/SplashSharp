@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using SplashSharp.Requests;
 using SplashSharp.Serialization;
 
 namespace SplashSharp.Tests
@@ -72,6 +73,37 @@ namespace SplashSharp.Tests
                 APropertyName = "someValue",
                 ANullProperty = null as object
             };
+
+            var actual = JsonConvert.SerializeObject(obj, SplashClient.SplashJsonSerializerSettings);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ExecuteOptions_Serialize_ContainsKnownProperties()
+        {
+            var expected = "{\"lua_source\":\"some_code();\",\"timeout\":10.0,\"load_args\":{\"one\":\"val\",\"two\":\"val2\"}}";
+            var obj = new ExecuteOptions
+            {
+                LuaSource = "some_code();",
+                Timeout = 10,
+                LoadArgs = new Dictionary<string, string> { { "one", "val"}, { "two", "val2" } }
+            };
+
+            var actual = JsonConvert.SerializeObject(obj, SplashClient.SplashJsonSerializerSettings);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ExecuteOptions_Serialize_ContainsAdditionalProperties()
+        {
+            var expected = "{\"lua_source\":\"some_code();\",\"timeout\":10.0,\"Additional\":\"woah there\"}";
+            var obj = new ExecuteOptions
+            {
+                LuaSource = "some_code();",
+                Timeout = 10
+            };
+
+            obj["Additional"] = "woah there";
 
             var actual = JsonConvert.SerializeObject(obj, SplashClient.SplashJsonSerializerSettings);
             Assert.AreEqual(expected, actual);
