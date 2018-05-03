@@ -42,6 +42,7 @@ namespace SplashSharp
         private const string RenderJpegEndpoint = "render.jpeg";
         private const string RenderJsonEndpoint = "render.json";
         private const string ExecuteEndpoint = "execute";
+        private const string RunEndpoint = "run";
         private const string InvokeGarbageCollectionEndpoint = "_gc";
         private const string GetInstanceStatusEndpoint = "_debug";
         private const string PingEndpoint = "_ping";
@@ -132,10 +133,14 @@ namespace SplashSharp
         /// <param name="options"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task Execute(ExecuteOptions options, CancellationToken token)
+        public async Task<SplashResponseWrapper<ExecuteResponse>> Execute(ExecuteOptions options, CancellationToken token)
         {
-            throw new NotImplementedException();
-            //return await MakeTypedGetRequestAsync<ExecuteResponse>(ExecuteEndpoint, options, token);
+            return await MakeTypedPostRequestAsync<ExecuteResponse>(ExecuteEndpoint, options, token);
+        }
+
+        public async Task<SplashResponseWrapper<RunResponse>> Run(RunOptions options, CancellationToken token)
+        {
+            return await MakeTypedPostRequestAsync<RunResponse>(RunEndpoint, options, token);
         }
 
         /// <summary>

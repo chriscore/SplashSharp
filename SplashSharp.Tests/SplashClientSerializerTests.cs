@@ -100,10 +100,10 @@ namespace SplashSharp.Tests
             var obj = new ExecuteOptions
             {
                 LuaSource = "some_code();",
-                Timeout = 10
+                Timeout = 10,
+                ["Additional"] = "woah there"
             };
 
-            obj["Additional"] = "woah there";
 
             var actual = JsonConvert.SerializeObject(obj, SplashClient.SplashJsonSerializerSettings);
             Assert.AreEqual(expected, actual);
