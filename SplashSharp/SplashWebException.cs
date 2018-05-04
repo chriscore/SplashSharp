@@ -14,7 +14,7 @@ namespace SplashSharp
     public class SplashWebException : Exception
     {
         public SplashWebException(HttpResponseMessage response, string responseContent)
-            : base($"Request to {response.RequestMessage.RequestUri} failed with {response.ReasonPhrase}")
+            : base($"Request to {response.RequestMessage.RequestUri} failed with {response.ReasonPhrase}: {responseContent}")
         {
             RequestUri = response.RequestMessage.RequestUri;
             StatusCode = (int)response.StatusCode;

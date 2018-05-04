@@ -92,7 +92,7 @@ namespace SplashSharp.Tests
             }
             catch (SplashWebException e)
             {
-                Assert.AreEqual("Request to http://www.badsite.com/ failed with Bad Request", e.Message);
+                Assert.AreEqual("Request to http://www.badsite.com/ failed with Bad Request: {\"Description\":\"The error description\",\"Error\":32,\"ErrorStatusCode\":32,\"Type\":\"Network\",\"Info\":{\"Type\":null,\"Url\":\"http://www.badsite.com/\",\"Code\":10,\"Text\":\"That didn\'t work!\",\"Error\":null,\"LineNumber\":0,\"Message\":null,\"Source\":null,\"SplashMethod\":null,\"Argument\":null,\"Description\":null}}", e.Message);
                 Assert.AreEqual("http://www.badsite.com/", e.RequestUri.ToString());
                 Assert.AreEqual(400, e.StatusCode);
 

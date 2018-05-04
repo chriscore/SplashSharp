@@ -13,7 +13,7 @@ using SplashSharp.Serialization;
 
 namespace SplashSharp
 {
-    public class SplashClient
+    public class SplashClient : ISplashClient
     {
         public SplashClient(string splashBaseUrl)
             : this(splashBaseUrl, new HttpClient())
@@ -33,6 +33,7 @@ namespace SplashSharp
         public Dictionary<string, string> CachedArgs { get; set; }
 
         internal HttpClient Client { get; }
+
         // TODO: intercept x-splash-saved-arguments to store into CachedArgs, provide an interface to safely use this.
         private const string SavedArgumentsHeaderName = "X-Splash-Saved-Arguments";
 
@@ -133,22 +134,14 @@ namespace SplashSharp
         /// <param name="options"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> Execute(ExecuteOptions options, CancellationToken token)
+        public Task<HttpResponseMessage> Execute(ExecuteOptions options, CancellationToken token)
         {
-            var request = BuildSplashRequest(ExecuteEndpoint, options);
-            var response = await Client.SendAsync(request, token);
-            await VerifyHttpResponseMessageValid(response);
-
-            return response;
+            return SendPostRequestWithVerification(ExecuteEndpoint, options, token);
         }
 
-        public async Task<HttpResponseMessage> Run(RunOptions options, CancellationToken token)
+        public Task<HttpResponseMessage> Run(RunOptions options, CancellationToken token)
         {
-            var request = BuildSplashRequest(RunEndpoint, options);
-            var response = await Client.SendAsync(request, token);
-            await VerifyHttpResponseMessageValid(response);
-
-            return response;
+            return SendPostRequestWithVerification(RunEndpoint, options, token);
         }
 
         /// <summary>
@@ -214,6 +207,15 @@ namespace SplashSharp
                         response.EnsureSuccessStatusCode();
                     }
                 }
+            }
+        }
+
+        protected internal virtual void SetCachedArgsFromResponse(HttpResponseMessage response)
+        {
+            throw new NotImplementedException();
+            if (response.Headers.TryGetValues(SavedArgumentsHeaderName, out var headerValues))
+            {
+
             }
         }
 

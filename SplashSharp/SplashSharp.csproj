@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <Authors>Chris Core</Authors>
+    <Company />
+    <Description>An easy to use client library for talking to hosted Splash instances.</Description>
+    <Copyright>Copyright (c) 2018 Chris Core</Copyright>
+    <PackageLicenseUrl>https://github.com/chriscore/SplashSharp/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/chriscore/SplashSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/chriscore/SplashSharp.git</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>Splash, Scrapinghub, Client, Scraping, Javascript, Browser, Headless</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
