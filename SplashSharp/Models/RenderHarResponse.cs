@@ -29,6 +29,13 @@ namespace SplashSharp.Models
         public int LineNumber { get; set; }
         public string Message { get; set; }
         public string Source { get; set; }
+        public string SplashMethod { get; set; }
+        // Argument
+
+
+        // Properties for BadOption type
+        public string Argument { get; set; }
+        public string Description { get; set; }
     }
 
     public class Log

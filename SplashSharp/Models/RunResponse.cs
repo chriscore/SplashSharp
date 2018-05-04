@@ -6,5 +6,6 @@ namespace SplashSharp.Models
 {
     public class RunResponse
     {
+        // TODO: what lives here?
     }
 }

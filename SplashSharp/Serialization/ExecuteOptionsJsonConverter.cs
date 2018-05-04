@@ -10,11 +10,11 @@ using Newtonsoft.Json.Serialization;
 
 namespace SplashSharp.Serialization
 {
-    public class ExecuteOptionsJsonConverter : JsonConverter
+    public class LuaScriptOptionsJsonConverter<T> : JsonConverter where T : BaseLuaScriptOptions
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (!(value is ExecuteOptions typed))
+            if (!(value is T typed))
             {
                 writer.WriteNull();
             }
@@ -27,7 +27,7 @@ namespace SplashSharp.Serialization
                 writer.WriteStartObject();
                 
                 foreach (var prop in allProperties
-                    .Where(p => !p.Name.Equals(nameof(ExecuteOptions.InternalProperties)) && !p.Name.Equals("Item")))
+                    .Where(p => !p.Name.Equals(nameof(BaseLuaScriptOptions.InternalProperties)) && !p.Name.Equals("Item")))
                 {
                     var propertyValue = prop.GetValue(typed);
 
@@ -84,7 +84,7 @@ namespace SplashSharp.Serialization
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(ExecuteOptions);
+            return objectType == typeof(T);
         }
     }
 }

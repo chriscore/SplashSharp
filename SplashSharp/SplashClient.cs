@@ -133,14 +133,22 @@ namespace SplashSharp
         /// <param name="options"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<SplashResponseWrapper<ExecuteResponse>> Execute(ExecuteOptions options, CancellationToken token)
+        public async Task<HttpResponseMessage> Execute(ExecuteOptions options, CancellationToken token)
         {
-            return await MakeTypedPostRequestAsync<ExecuteResponse>(ExecuteEndpoint, options, token);
+            var request = BuildSplashRequest(ExecuteEndpoint, options);
+            var response = await Client.SendAsync(request, token);
+            await VerifyHttpResponseMessageValid(response);
+
+            return response;
         }
 
-        public async Task<SplashResponseWrapper<RunResponse>> Run(RunOptions options, CancellationToken token)
+        public async Task<HttpResponseMessage> Run(RunOptions options, CancellationToken token)
         {
-            return await MakeTypedPostRequestAsync<RunResponse>(RunEndpoint, options, token);
+            var request = BuildSplashRequest(RunEndpoint, options);
+            var response = await Client.SendAsync(request, token);
+            await VerifyHttpResponseMessageValid(response);
+
+            return response;
         }
 
         /// <summary>
@@ -239,7 +247,8 @@ namespace SplashSharp
 
             if (options != null)
             {
-                request.Content = new StringContent(JsonConvert.SerializeObject(options, SplashJsonSerializerSettings), Encoding.UTF8, "application/json");
+                var json = JsonConvert.SerializeObject(options, SplashJsonSerializerSettings);
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
             }
 
             return request;
@@ -257,7 +266,8 @@ namespace SplashSharp
             };
 
             settings.Converters.Add(new NullableBoolJsonConverter());
-            settings.Converters.Add(new ExecuteOptionsJsonConverter());
+            settings.Converters.Add(new LuaScriptOptionsJsonConverter<ExecuteOptions>());
+            settings.Converters.Add(new LuaScriptOptionsJsonConverter<RunOptions>());
             return settings;
         }
     }
