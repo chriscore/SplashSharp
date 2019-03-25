@@ -45,7 +45,7 @@ namespace SplashSharp
         /// <param name="options"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<HttpResponseMessage> RenderPngAsync(RenderPngOptions options, CancellationToken token = default(CancellationToken));
+        Task<HttpResponseMessage> RenderPngRawAsync(RenderPngOptions options, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Gets the page rendered as a jpeg image
@@ -53,7 +53,7 @@ namespace SplashSharp
         /// <param name="options"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<HttpResponseMessage> RenderJpegAsync(RenderJpegOptions options, CancellationToken token = default(CancellationToken));
+        Task<HttpResponseMessage> RenderJpegRawAsync(RenderJpegOptions options, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Returns a json-encoded dictionary with information about javascript-rendered webpage. 

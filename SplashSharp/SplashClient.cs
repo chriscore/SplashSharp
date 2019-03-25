@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using SplashSharp.Models;
 using SplashSharp.Requests;
 using SplashSharp.Serialization;
+
 
 namespace SplashSharp
 {
@@ -98,9 +100,33 @@ namespace SplashSharp
         /// <param name="options"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public Task<HttpResponseMessage> RenderPngAsync(RenderPngOptions options, CancellationToken token = default(CancellationToken))
+        public Task<HttpResponseMessage> RenderPngRawAsync(RenderPngOptions options, CancellationToken token = default(CancellationToken))
         {
             var request = BuildSplashRequest(RenderPngEndpoint, options);
+            return Client.SendAsync(request, token);
+        }
+
+        /// <summary>
+        /// Gets the page rendered as a png image
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<Image> RenderPngAsync(RenderPngOptions options, CancellationToken token = default(CancellationToken))
+        {
+            var response = await RenderPngRawAsync(options, token);
+            return await ReadImageFromStream(response);
+        }
+
+        /// <summary>
+        /// Gets an HttpResponseMessage containing the page rendered as a jpeg image
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Task<HttpResponseMessage> RenderJpegRawAsync(RenderJpegOptions options, CancellationToken token = default(CancellationToken))
+        {
+            var request = BuildSplashRequest(RenderJpegEndpoint, options);
             return Client.SendAsync(request, token);
         }
 
@@ -110,10 +136,10 @@ namespace SplashSharp
         /// <param name="options"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public Task<HttpResponseMessage> RenderJpegAsync(RenderJpegOptions options, CancellationToken token = default(CancellationToken))
+        public async Task<Image> RenderJpegAsync(RenderJpegOptions options, CancellationToken token = default(CancellationToken))
         {
-            var request = BuildSplashRequest(RenderJpegEndpoint, options);
-            return Client.SendAsync(request, token);
+            var response = await RenderJpegRawAsync(options, token);
+            return await ReadImageFromStream(response);
         }
 
         /// <summary>
@@ -208,6 +234,16 @@ namespace SplashSharp
                     }
                 }
             }
+        }
+
+        private static async Task<Image> ReadImageFromStream(HttpResponseMessage response)
+        {
+            var stream = await response.Content.ReadAsStreamAsync();
+            
+            var image = Image.FromStream(stream);
+            
+
+            return image;
         }
 
         protected internal virtual void SetCachedArgsFromResponse(HttpResponseMessage response)
