@@ -249,10 +249,6 @@ namespace SplashSharp
         protected internal virtual void SetCachedArgsFromResponse(HttpResponseMessage response)
         {
             throw new NotImplementedException();
-            if (response.Headers.TryGetValues(SavedArgumentsHeaderName, out var headerValues))
-            {
-
-            }
         }
 
         protected virtual async Task<SplashResponseWrapper<T>> DeserializeResponse<T>(HttpResponseMessage response)
